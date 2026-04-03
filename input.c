@@ -1,12 +1,13 @@
 #include "snake.h"
 
 
-gboolean on_key_press(GtkWidget *widget, GdkEventKey *event, gpointer data) {
+gboolean on_key_press(GtkWidget *widget, GdkEventKey *event, gpointer data)
+ {
     (void)widget;  
     (void)data;
 
-    switch (event->keyval) {
-
+    switch (event->keyval)
+     {
         case GDK_KEY_Up:
         case GDK_KEY_w:
         case GDK_KEY_W:
@@ -33,29 +34,28 @@ gboolean on_key_press(GtkWidget *widget, GdkEventKey *event, gpointer data) {
 
         case GDK_KEY_p:
         case GDK_KEY_P:
-            if (!gs.game_over) {
-                gs.paused = !gs.paused;  /* Toggle: TRUE → FALSE → TRUE */
+            if (!gs.game_over) 
+            {
+                gs.paused = !gs.paused; 
                 gtk_widget_queue_draw(canvas);
             }
             break;
 
         case GDK_KEY_r:
-        case GDK_KEY_R: {
-            int saved_hi = gs.high_score;  /* Preserve high score */
-            game_init();                   /* Reset everything else */
-            gs.high_score = saved_hi;      /* Restore high score   */
+        case GDK_KEY_R: 
+        {
+            int saved_hi = gs.high_score;  
+            game_init();                   
+            gs.high_score = saved_hi;      
             break;
         }
-
         case GDK_KEY_q:
         case GDK_KEY_Q:
         case GDK_KEY_Escape:
             gtk_main_quit();
             break;
-
         default:
             break;
     }
-
-    return TRUE;  /* Signal handled — don't propagate further */
+    return TRUE;  
 }
