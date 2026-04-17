@@ -213,8 +213,15 @@ gboolean on_draw(GtkWidget *widget, cairo_t *cr, gpointer data){
         cairo_move_to(cr, gx + gw/2 - te.width/2, gy + gh/2 + 34);
         cairo_show_text(cr, restart);
     }
-        
+    if (!gs.game_over) {
+        cairo_set_font_size(cr, 10);
+        cairo_set_source_rgba(cr, 0.45, 0.45, 0.55, 0.8);
+        const char *hint =
+            "Arrow Keys / WASD  ·  P = Pause  ·  R = Restart  ·  Q = Quit";
+        cairo_text_extents(cr, hint, &te);
+        cairo_move_to(cr, W/2 - te.width/2, H - 6);
+        cairo_show_text(cr, hint);
     }
-    
-    
-}
+
+    return FALSE;
+    }
