@@ -22,16 +22,16 @@ gboolean on_draw(GtkWidget *widget, cairo_t *cr, gpointer data){
 
     cairo_text_extents_t te;
 
-    // WINDOW BACKGROUND
+    // Background Window
     cairo_set_source_rgb(cr, 0.08, 0.09, 0.12);
     cairo_paint(cr);
 
-    // HEADER BAR
+    // Header
     cairo_set_source_rgb(cr, 0.10, 0.12, 0.17);
     cairo_rectangle(cr, 0, 0, W, 55);
     cairo_fill(cr);
 
-    // TITLE NAME
+    // Title name
     cairo_select_font_face(cr, "Monospace", CAIRO_FONT_SLANT_NORMAL, 
                             CAIRO_FONT_WEIGHT_BOLD);
     cairo_set_font_size(cr, 20);
@@ -39,7 +39,7 @@ gboolean on_draw(GtkWidget *widget, cairo_t *cr, gpointer data){
     cairo_move_to(cr, BORDER_PAD, 36);
     cairo_show_text(cr, "SNAKE GAME");
 
-    // CURRENT SCORE DISPLAY
+    // Current Score Display
     char score[64];    
     snprintf(score, sizeof(score), "SCORE: %d", gs.score);
     cairo_set_font_size(cr, 14);
@@ -48,7 +48,7 @@ gboolean on_draw(GtkWidget *widget, cairo_t *cr, gpointer data){
     cairo_move_to(cr, W/2 - te.width/2, 34);
     cairo_show_text(cr, score);
 
-    // HIGH SCORE DISPLAY
+    // High Score Display
     char hi_score[64];
     snprintf(hi_score, sizeof(hi_score), "BEST: %d", gs.high_score);
     cairo_text_extents(cr,hi_score, &te);
@@ -56,13 +56,13 @@ gboolean on_draw(GtkWidget *widget, cairo_t *cr, gpointer data){
     cairo_move_to(cr, W - BORDER_PAD - te.width, 34);
     cairo_show_text(cr, hi_score);
 
-    // GRID BACKGROUND
+    // Grid Background
 
     draw_rounded_rect(cr, gx - 2, gy - 2, gw + 4, gh + 4, 6);
     cairo_set_source_rgb(cr, 0.13, 0.16, 0.22); // dark blue-grey
     cairo_fill(cr);
 
-    // GRID LINES
+    // Grid lines
     cairo_set_line_width(cr, 0.4);
     cairo_set_source_rgba(cr, 1.0, 1.0, 1.0, 0.04);
     for (int c = 0; c <= GRID_COLS; c++) {
@@ -75,7 +75,7 @@ gboolean on_draw(GtkWidget *widget, cairo_t *cr, gpointer data){
     }
     cairo_stroke(cr);
 
-    // FOOD
+    // Food
     double fx = gx + gs.food.x * CELL_SIZE + 2;
     double fy = gy + gs.food.y * CELL_SIZE + 2;
     double fs = CELL_SIZE - 4;
@@ -86,7 +86,7 @@ gboolean on_draw(GtkWidget *widget, cairo_t *cr, gpointer data){
     cairo_set_source_rgb(cr, 0.95, 0.25, 0.30);
     cairo_fill(cr);
 
-    // SNAKE BODY
+    // Snake Body
     for (int i = gs.length - 1; i >= 0; i--)
     {
         double sx = gx + gs.body[i].x * CELL_SIZE + 1.5;
@@ -109,8 +109,44 @@ gboolean on_draw(GtkWidget *widget, cairo_t *cr, gpointer data){
         draw_rounded_rect(cr, sx, sy, sw, sw, (i == 0) ? 6 : 4);
         cairo_fill(cr);
 
-        // EYES ON HEAD
+        // Eyes on head
+        if (i == 0) {
+        
+            double ex1, ey1, ex2, ey2;
+            double ew = sw * 0.18;  
 
+            switch (gs.dir) {
+                case DIR_RIGHT:
+                    ex1 = sx + sw*0.72; ey1 = sy + sw*0.25;
+                    ex2 = sx + sw*0.72; ey2 = sy + sw*0.65;
+                    break;
+                case DIR_LEFT:
+                    ex1 = sx + sw*0.12; ey1 = sy + sw*0.25;
+                    ex2 = sx + sw*0.12; ey2 = sy + sw*0.65;
+                    break;
+                case DIR_UP:
+                    ex1 = sx + sw*0.25; ey1 = sy + sw*0.12;
+                    ex2 = sx + sw*0.65; ey2 = sy + sw*0.12;
+                    break;
+                default: 
+                    ex1 = sx + sw*0.25; ey1 = sy + sw*0.75;
+                    ex2 = sx + sw*0.65; ey2 = sy + sw*0.75;
+                    break;
+            }
+
+            // Dark eye base 
+            cairo_set_source_rgb(cr, 0.05, 0.05, 0.05);
+            cairo_arc(cr, ex1, ey1, ew, 0, 2*G_PI); cairo_fill(cr);
+            cairo_arc(cr, ex2, ey2, ew, 0, 2*G_PI); cairo_fill(cr);
+
+            // White pupil 
+            cairo_set_source_rgb(cr, 1.0, 1.0, 1.0);
+            cairo_arc(cr, ex1 + ew*0.3, ey1 - ew*0.3, ew*0.4, 0, 2*G_PI);
+            cairo_fill(cr);
+            cairo_arc(cr, ex2 + ew*0.3, ey2 - ew*0.3, ew*0.4, 0, 2*G_PI);
+            cairo_fill(cr);
+        }
+    }
         
     }
     
