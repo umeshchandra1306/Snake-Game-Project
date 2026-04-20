@@ -1,11 +1,11 @@
 #include "snake.h"
-/*move → check collisions → eat food → redraw*/
+
 gboolean game_tick(gpointer data) {
     (void)data;  
     if (!gs.running || gs.game_over || gs.paused)
         return G_SOURCE_CONTINUE;
 
-    //   STEP 1 — Apply buffered direction
+    //  Apply buffered direction
        
     Direction nd = gs.next_dir;
 
@@ -16,8 +16,8 @@ gboolean game_tick(gpointer data) {
         gs.dir = nd;  /* Safe to apply — not a reversal */
     }
 
-    //   STEP 2 — Calculate new head position
-     //  Start from the current head 
+    //   Calculate new head position
+    
     Point new_head = gs.body[0]; 
 
     switch (gs.dir) {
@@ -27,7 +27,7 @@ gboolean game_tick(gpointer data) {
         case DIR_RIGHT: new_head.x++; break;  // x increases going right 
     }
 
-    // STEP 3 — Wall collision detection
+    //  Wall collision detection
        
         
     if (new_head.x < 0 || new_head.x >= GRID_COLS ||
@@ -44,7 +44,7 @@ gboolean game_tick(gpointer data) {
     }
 
      
-    //   STEP 4 — Self collision detection
+    //    Self collision detection
  
     for (int i = 0; i < gs.length - 1; i++) {
         if (gs.body[i].x == new_head.x &&
@@ -52,7 +52,6 @@ gboolean game_tick(gpointer data) {
 
             // Snake bit itself — game over 
             gs.game_over = TRUE;
-
             if (gs.score > gs.high_score)
                 gs.high_score = gs.score;
 
@@ -60,27 +59,21 @@ gboolean game_tick(gpointer data) {
             return G_SOURCE_CONTINUE;
         }
     }
+    //   Checking if snake eats food
 
-    
-    //   STEP 5 — Check if snake eats food
+    gboolean ate = (new_head.x == gs.food.x && new_head.y == gs.food.y);
 
-    gboolean ate = (new_head.x == gs.food.x &&
-                    new_head.y == gs.food.y);
-
-    
-    //   STEP 6 — Move the snake body
+    //   Move the snake body
 
     if (!ate) {
-       
-        memmove(&gs.body[1], &gs.body[0],
-                (gs.length - 1) * sizeof(Point));
+        memmove(&gs.body[1], &gs.body[0], (gs.length - 1) * sizeof(Point));
     } else {
         // Snake ate food — grow by one segment.
           
         if (gs.length < MAX_SNAKE) {
             memmove(&gs.body[1], &gs.body[0],
                     gs.length * sizeof(Point));
-            gs.length++;              // Snake is now one longer  
+            gs.length++;     // Snake is now one longer  
         }
         gs.score += SCORE_PER_FOOD;   // Add points               
         place_food();                
@@ -90,8 +83,8 @@ gboolean game_tick(gpointer data) {
     gs.body[0] = new_head;
 
  
-      // STEP 7 — Request a redraw of the canvas
-     //  GTK will call on_draw() (in ui.c) to repaint the screen.
+    //  Request a redraw of the canvas
+    //  GTK will call on_draw() (in ui.c) to repaint the screen.
       
     gtk_widget_queue_draw(canvas);
 
